@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.core.publisher.Flux
+import reactor.test.StepVerifier
 
 @SpringBootTest
 class RSocketClientApplicationTests @Autowired constructor(
@@ -18,6 +19,10 @@ class RSocketClientApplicationTests @Autowired constructor(
 		val fivePrices = prices.take(5)
 		Assertions.assertEquals(5, fivePrices.count().block())
 		Assertions.assertEquals("USD", fivePrices.blockFirst()?.symbol)
-	}
 
+		StepVerifier.create(prices.take(2))
+				.expectNextMatches { it.symbol == "USD" }
+				.expectNextMatches { it.symbol == "USD" }
+				.verifyComplete()
+	}
 }
